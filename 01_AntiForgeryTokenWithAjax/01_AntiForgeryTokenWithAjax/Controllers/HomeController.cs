@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace _01_AntiForgeryTokenWithAjax.Controllers
@@ -13,18 +10,16 @@ namespace _01_AntiForgeryTokenWithAjax.Controllers
 			return View();
 		}
 
-		public ActionResult About()
+		public PartialViewResult NowWithGET()
 		{
-			ViewBag.Message = "Your application description page.";
-
-			return View();
+			return PartialView("TestLinkResult", DateTime.Now);
 		}
 
-		public ActionResult Contact()
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public PartialViewResult NowWithToken()
 		{
-			ViewBag.Message = "Your contact page.";
-
-			return View();
+			return PartialView("TestLinkResult", DateTime.Now);
 		}
 	}
 }

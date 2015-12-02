@@ -1,31 +1,73 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+	ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+<h1>POST with AntiForgeryToken</h1>
+
+@* GET *@
+<div class="row">
+	<hr />
+	<h5>GET</h5>
+	<div class="col-md-6">
+		@Ajax.ActionLink("action link.", "NowWithGET", new AjaxOptions
+		{
+			UpdateTargetId = "NowWithGET",
+			InsertionMode = InsertionMode.Replace,
+			HttpMethod = "GET"
+		})
+	</div>
+	<div class="col-md-6" id="NowWithGET"></div>
 </div>
 
+@* POST with AntiForgeryToken by Ajax.BeginForm *@
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+	<hr />
+	<h5>POST with AntiForgeryToken by Ajax.BeginForm</h5>
+	<div class="col-md-6">
+		@using (Ajax.BeginForm("NowWithToken", new AjaxOptions
+		{
+			UpdateTargetId = "NowWithToken2",
+			InsertionMode = InsertionMode.Replace,
+		}))
+		{
+			@Html.AntiForgeryToken();
+			<input type="submit" value="NowWithToken" name="submit" />
+		}
+	</div>
+	<div class="col-md-6" id="NowWithToken2"></div>
 </div>
+
+@* POST with AntiForgeryToken by Ajax.ActionLink *@
+<div class="row">
+	<hr />
+	<h5>POST with AntiForgeryToken by Ajax.ActionLink</h5>
+	<span id="token">
+		@Html.AntiForgeryToken()
+	</span>
+	<div class="col-md-6">
+		@Ajax.ActionLink("action link.", "NowWithToken", new AjaxOptions
+		{
+			UpdateTargetId = "NowWithToken3",
+			InsertionMode = InsertionMode.Replace,
+			HttpMethod = "POST",
+			OnBegin = "onBegin",
+		})
+	</div>
+	<div class="col-md-6" id="NowWithToken3"></div>
+</div>
+
+
+@section scripts{
+	@Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+}
+
+<script type=text/javascript>
+	function onBegin(jqXHR, settings) {
+		console.log('=== jqXHR ===\n' + jqXHR.toSource());
+		console.log('=== settings ===\n' + settings.toSource());
+		var token = $('#token  [name=__RequestVerificationToken]').val();
+		settings.data = settings.data + '&__RequestVerificationToken=' + token;
+		console.log('=== settings with token ===\n' + settings.toSource());
+		console.log('=== settings.data ===\n' + settings.data);
+	}
+</script>
